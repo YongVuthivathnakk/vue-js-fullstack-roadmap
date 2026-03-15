@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body id="app" class="bg-gray-100 p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+      <!-- Title -->
+      <h1 class="text-3xl font-bold text-center">🛒 Product Catalog</h1>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2 justify-center">
+        <button
+          @click="activeFilter = 'all'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'all'}"
+          class="px-3 py-1 bg-blue-500 text-white rounded"
+        >
+          All Products
+        </button>
+        <button
+          @click="activeFilter = 'in-stock'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'in-stock'}"
+          class="px-3 py-1 bg-green-500 text-white rounded"
+        >
+          In Stock
+        </button>
+        <button
+          @click="activeFilter = 'out-of-stock'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'out-of-stock'}"
+          class="px-3 py-1 bg-red-500 text-white rounded"
+        >
+          Out of Stock
+        </button>
+
+        <button
+          @click="activeFilter = 'electronics'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'electronics'}"
+          class="px-3 py-1 bg-gray-800 text-white rounded"
+        >
+          Electronics
+        </button>
+        <button
+          @click="activeFilter = 'clothing'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'clothing'}"
+          class="px-3 py-1 bg-gray-800 text-white rounded"
+        >
+          Clothing
+        </button>
+        <button
+          @click="activeFilter = 'books'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'books'}"
+          class="px-3 py-1 bg-gray-800 text-white rounded"
+        >
+          Books
+        </button>
+        <button
+          @click="activeFilter = 'food'"
+          :class="{'border-4 border-yellow-400': activeFilter === 'food'}"
+          class="px-3 py-1 bg-gray-800 text-white rounded"
+        >
+          Food
+        </button>
+      </div>
+
+      <!-- Sort -->
+      <div class="flex justify-center">
+        <select v-model="sort" class="border rounded px-3 py-2">
+          <option value="sort">Sort by</option>
+          <option value="lowHigh">Price: Low → High</option>
+          <option value="highLow">Price: High → Low</option>
+          <option value="byName">Name (A–Z)</option>
+          <option value="ratingHighLow">Rating (High → Low)</option>
+        </select>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Product 1 (In Stock) -->
+
+        <div
+          v-for="(product, index) in filteredProduct"
+          :key="index"
+          class="bg-white p-4 rounded-xl shadow"
+        >
+          <img :src="product.image" class="rounded mb-3" />
+          <h2 class="font-bold text-lg">{{product.name}}</h2>
+          <p class="text-gray-600">${{product.price}}</p>
+          <p class="text-sm">{{product.category}}</p>
+          <p
+            class="text-green-600 font-medium mt-1"
+            :class="{'text-red-500': !product.inStock, 'text-green-500': product.inStock}"
+          >
+            {{product.inStock ? "In Stock" : "Out of Stock"}}
+          </p>
+          <p class="text-yellow-500">{{showRating(product)}}</p>
+
+          <div class="flex gap-2 mt-3">
+            <button
+              @click="onToggleStock(product)"
+              class="flex-1 bg-indigo-500 text-white rounded px-2 py-1"
+            >
+              Toggle Stock
+            </button>
+            <button
+              @click="deleteProduct(index)"
+              class="bg-red-500 text-white rounded px-2 py-1"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            activeFilter: "all",
+            sort: "sort",
+            products: [
+              {
+                id: 1,
+                name: "Laptop",
+                price: 900,
+                category: "Electronics",
+                inStock: true,
+                rating: 5,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 2,
+                name: "Headphones",
+                price: 120,
+                category: "Electronics",
+                inStock: false,
+                rating: 4,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 3,
+                name: "T-Shirt",
+                price: 25,
+                category: "Clothing",
+                inStock: true,
+                rating: 3,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 4,
+                name: "Jeans",
+                price: 60,
+                category: "Clothing",
+                inStock: false,
+                rating: 4,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 5,
+                name: "Novel Book",
+                price: 15,
+                category: "Books",
+                inStock: true,
+                rating: 5,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 6,
+                name: "Cookbook",
+                price: 30,
+                category: "Books",
+                inStock: true,
+                rating: 4,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 7,
+                name: "Pizza",
+                price: 10,
+                category: "Food",
+                inStock: false,
+                rating: 5,
+                image: "https://placehold.co/600x400",
+              },
+              {
+                id: 8,
+                name: "Burger",
+                price: 8,
+                category: "Food",
+                inStock: true,
+                rating: 4,
+                image: "https://placehold.co/600x400",
+              },
+            ],
+          };
+        },
+        methods: {
+          onToggleStock(product) {
+            product.inStock = !product.inStock;
+          },
+          deleteProduct(index) {
+            const result = window.confirm("Are you sure ?");
+            if (result) {
+              this.products.splice(index, 1);
+            } else {
+              return;
+            }
+          },
+          showRating(product) {
+            if (product.rating === 5) {
+              return "★★★★★";
+            } else {
+              const unrated = Math.abs(5 - product.rating);
+              let stars = "";
+              for (let i = 1; i <= product.rating; i++) {
+                stars += "★";
+              }
+              for (let i = 1; i <= unrated; i++) {
+                stars = stars += "☆";
+              }
+              return stars;
+            }
+          },
+        },
+        computed: {
+          filteredProduct() {
+            let filtered = [];
+
+            // Filtering
+            if (this.activeFilter === "all") {
+              filtered = this.products.slice();
+            } else if (this.activeFilter === "in-stock") {
+              filtered = this.products.filter((p) => p.inStock);
+            } else if (this.activeFilter === "out-of-stock") {
+              filtered = this.products.filter((p) => !p.inStock);
+            } else {
+              filtered = this.products.filter(
+                (p) => p.category.toLowerCase() === this.activeFilter,
+              );
+            }
+
+            // Sorting
+            if (this.sort === "lowHigh") {
+              filtered.sort((a, b) => a.price - b.price);
+            } else if (this.sort === "highLow") {
+              filtered.sort((a, b) => b.price - a.price);
+            } else if (this.sort === "byName") {
+              filtered.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (this.sort === "ratingHighLow") {
+              filtered.sort((a, b) => b.rating - a.rating);
+            }
+
+            return filtered;
+          },
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

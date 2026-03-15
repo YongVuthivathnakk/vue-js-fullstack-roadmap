@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body
+    id="app"
+    class="bg-gray-100 min-h-screen flex items-center justify-center"
+  >
+    <div class="bg-white w-full max-w-md rounded-xl shadow-lg p-6 space-y-6">
+      <!-- Title -->
+      <h1 class="text-2xl font-bold text-center">🎯 Number Guessing Game</h1>
+
+      <!-- Input -->
+      <div class="flex gap-2">
+        <input
+          v-model="guessInput"
+          type="number"
+          placeholder="Enter your guess"
+          class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <button
+          :disabled="isWinning"
+          @click="guess"
+          class="disabled:cursor-not-allowed disabled:bg-gray-500 bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition active:bg-blue-400"
+        >
+          Guess
+        </button>
+      </div>
+
+      <!-- Feedback -->
+      <div class="text-center text-lg font-medium text-gray-700">
+        <p>Make a guess between 1 and 100!</p>
+        <p class="mt-1 text-gray-500">Attempts: {{attempts}}</p>
+        <p class="mt-1 text-green-500" :class="{ hidden: !isWinning }">
+          You Won
+        </p>
+      </div>
+
+      <!-- Hints -->
+      <div class="bg-gray-100 p-4 rounded-lg space-y-1 text-sm text-gray-600">
+        <p>{{hint}}</p>
+      </div>
+
+      <!-- Restart -->
+      <div class="text-center">
+        <button
+          @click="restart"
+          class="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition"
+        >
+          New Game
+        </button>
+      </div>
+    </div>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            attempts: 0,
+            randomNumber: Number(Math.floor(Math.random() * 100) + 1),
+            guessInput: 0,
+            isWinning: false,
+            hint: "Try guessing a number",
+          };
+        },
+        methods: {
+          guess() {
+            this.attempts++;
+            this.showHint();
+            if (this.guessInput === this.randomNumber) {
+              this.isWinning = true;
+            }
+          },
+          showHint() {
+            const diff = Math.abs(this.randomNumber - this.guessInput);
+
+            if (diff > 30) {
+              this.hint = "Very cold ❄️";
+            } else if (diff > 20) {
+              this.hint = "Cold 🥶";
+            } else if (diff > 10) {
+              this.hint = "Warm 🙂";
+            } else if (diff > 5) {
+              this.hint = "Hot 🔥";
+            } else if (diff > 0) {
+              this.hint = "Very hot! 🔥🔥";
+            } else {
+              this.hint = "Correct! 🎉";
+            }
+          },
+          restart() {
+            this.randomNumber = Number(Math.floor(Math.random() * 100) + 1);
+            this.attempts = 0;
+            this.guessInput = 0;
+            this.isWinning = false;
+            this.hint = "Try guessing a number";
+          },
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

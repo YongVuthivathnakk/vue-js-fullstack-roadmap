@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-800 p-6">
+    <!-- Page Title -->
+    <h1 class="text-3xl font-bold mb-6 text-blue-700 important">
+      DOM Selection & Traversal Practice
+    </h1>
+
+    <!--  Navigation Menu  -->
+    <nav id="navigation" class="main-nav bg-white shadow rounded-lg p-4 mb-8">
+      <h2 class="text-xl font-semibold mb-3">Main Menu</h2>
+
+      <ul id="main-menu" class="space-y-2">
+        <li class="px-3 py-1 rounded hover:bg-blue-100">Home</li>
+
+        <li class="menu-item px-3 py-1 rounded hover:bg-blue-100">
+          Products
+          <ul
+            id="submenu"
+            class="ml-6 mt-2 space-y-2 border-l-2 border-blue-300 pl-4"
+          >
+            <li class="px-3 py-1 rounded hover:bg-blue-50">Books</li>
+
+            <li class="px-3 py-1 rounded hover:bg-blue-50">
+              Electronics
+              <ul class="ml-6 mt-2 space-y-2 border-l-2 border-blue-200 pl-4">
+                <li
+                  class="highlight deepest-item px-3 py-1 bg-yellow-200 rounded"
+                >
+                  Laptops
+                </li>
+                <li class="px-3 py-1 rounded hover:bg-blue-50">Phones</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        <li class="px-3 py-1 rounded hover:bg-blue-100">Contact</li>
+      </ul>
+    </nav>
+
+    <!-- ===== About Section ===== -->
+    <section id="about" class="feature bg-white shadow rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold mb-4">About Us</h2>
+
+      <p class="highlight bg-yellow-100 p-3 rounded mb-2">
+        We are a company that values quality.
+      </p>
+      <p class="mb-4">Our mission is to deliver great products.</p>
+
+      <ul class="list-disc list-inside space-y-1">
+        <li>Quality</li>
+        <li>Integrity</li>
+        <li>Innovation</li>
+      </ul>
+    </section>
+
+    <!-- ===== Services Section ===== -->
+    <section id="services" class="bg-white shadow rounded-lg p-6 mb-8">
+      <h2 class="important text-2xl font-semibold text-red-600 mb-4">
+        Services
+      </h2>
+
+      <p class="mb-2">We offer a wide range of services.</p>
+      <p class="highlight bg-yellow-100 p-3 rounded mb-4">
+        Customer satisfaction is our priority.
+      </p>
+
+      <ul class="list-disc list-inside space-y-1">
+        <li>Consulting</li>
+        <li>Development</li>
+      </ul>
+    </section>
+
+    <!-- ===== Contact Section ===== -->
+    <section id="contact" class="bg-white shadow rounded-lg p-6">
+      <h3 class="text-xl font-semibold mb-4">Contact Us</h3>
+
+      <p class="mb-2">Email us for more information.</p>
+      <p class="feature border-l-4 border-teal-500 pl-4 text-teal-700 mb-4">
+        We respond within 24 hours.
+      </p>
+
+      <ul class="list-disc list-inside space-y-1">
+        <li>Email</li>
+        <li>Phone</li>
+      </ul>
+    </section>
+    <script src="index.js"></script>
+  </body>
+</html>

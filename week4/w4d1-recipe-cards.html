@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body class="bg-grey-100 p-8">
+    <header>
+      <h1 class="text-center text-2xl font-bold mb-6 lg:text-3xl lg:text-4xl">
+        Recipe Card Collection
+      </h1>
+    </header>
+    <div id="app">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <recipe-card
+          v-for="(recipe, index) in recipes"
+          :key="index"
+          :title="recipe.title"
+          :image="recipe.image"
+          :prep-time="recipe.prepTime"
+          :difficulty="recipe.difficulty"
+          :servings="recipe.servings"
+          :rating="recipe.rating"
+          :ingredients="recipe.ingredients"
+          :is-vegetarian="recipe.isVegetarian"
+        >
+        </recipe-card>
+      </div>
+    </div>
+    <script>
+      const { createApp } = Vue;
+
+      // ================================================
+      //                  ENUM
+      // ================================================
+
+      const DIFFICULTY_LEVELS = Object.freeze({
+        Easy: "Easy",
+        Medium: "Medium",
+        Hard: "Hard",
+      });
+
+      // ================================================
+      //                  COMPONENTS
+      // ================================================
+
+      const RecipeCard = {
+        props: {
+          title: {
+            type: String,
+            required: true,
+          },
+          image: {
+            type: String,
+            default: "https://placehold.co/400x200?text=No+Image",
+          },
+          prepTime: {
+            type: Number,
+            required: true,
+          },
+          difficulty: {
+            type: String,
+            required: true,
+            validator: (value) =>
+              Object.values(DIFFICULTY_LEVELS).includes(value),
+          },
+          servings: {
+            type: Number,
+            default: 4,
+          },
+          rating: {
+            type: Number,
+            validator: (value) => value >= 1 && value <= 5,
+          },
+          ingredients: {
+            type: Array,
+            default: () => [], // Aviod shared state with other instances
+          },
+          isVegetarian: {
+            type: Boolean,
+            default: false,
+          },
+        },
+        computed: {
+          difficultyClass() {
+            return {
+              [DIFFICULTY_LEVELS.Easy]: "bg-green-100 text-green-700",
+              [DIFFICULTY_LEVELS.Medium]: "bg-yellow-100 text-yellow-700",
+              [DIFFICULTY_LEVELS.Hard]: "bg-red-100 text-red-700",
+            }[this.difficulty];
+          },
+        },
+
+        template: `
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
+
+            <!-- Image -->
+            <img :src="image" :alt="title" class="w-full h-48 object-cover" />
+
+            <div class="p-4 flex flex-col gap-3 flex-1">
+
+              <!-- Title + Vegetarian badge -->
+              <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-gray-800">{{ title }}</h2>
+                <span
+                  v-if="isVegetarian"
+                  class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold"
+                >🌿 Veg</span>
+              </div>
+
+              <!-- Difficulty badge -->
+              <div>
+                <span :class="[difficultyClass, 'text-xs font-semibold px-3 py-1 rounded-full']">
+                  {{ difficulty }}
+                </span>
+              </div>
+
+              <!-- Meta info -->
+              <div class="flex gap-4 text-sm text-gray-500">
+                <span>⏱ {{ prepTime }} mins</span>
+                <span>🍽 {{ servings }} servings</span>
+              </div>
+
+              <!-- Star rating -->
+              <div class="text-yellow-400 text-lg">
+                <span v-for="n in 5" :key="n">{{ n <= rating ? '★' : '☆' }}</span>
+                <span class="text-gray-400 text-sm ml-1">({{ rating }}/5)</span>
+              </div>
+
+              <!-- Ingredients -->
+              <div>
+                <p class="text-sm font-semibold text-gray-700 mb-1">Ingredients:</p>
+                <ul class="text-sm text-gray-600 list-disc list-inside space-y-1">
+                  <li v-for="ingredient in ingredients" :key="ingredient">{{ ingredient }}</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        `,
+      };
+
+      const app = createApp({
+        components: { RecipeCard },
+        data() {
+          return {
+            recipes: [
+              {
+                title: "Banana Pancakes",
+                image:
+                  "https://images.unsplash.com/photo-1583503654530-a4ca08800292?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D.co/400x200?text=Banana+Pancakes",
+                prepTime: 15,
+                difficulty: DIFFICULTY_LEVELS.Easy,
+                servings: 2,
+                rating: 4,
+                ingredients: [
+                  "2 bananas",
+                  "2 eggs",
+                  "1/2 cup flour",
+                  "1 tsp baking powder",
+                  "Pinch of salt",
+                ],
+                isVegetarian: true,
+              },
+              {
+                title: "Grilled Chicken Salad",
+                image:
+                  "https://images.unsplash.com/photo-1605291535065-e1d52d2b264a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                prepTime: 25,
+                difficulty: DIFFICULTY_LEVELS.Easy,
+                servings: 3,
+                rating: 5,
+                ingredients: [
+                  "200g chicken breast",
+                  "Mixed greens",
+                  "Cherry tomatoes",
+                  "Olive oil",
+                  "Lemon juice",
+                ],
+                isVegetarian: false,
+              },
+              {
+                title: "Beef Tacos",
+                image:
+                  "https://plus.unsplash.com/premium_photo-1661730314652-911662c0d86e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                prepTime: 30,
+                difficulty: DIFFICULTY_LEVELS.Medium,
+                servings: 4,
+                rating: 5,
+                ingredients: [
+                  "300g ground beef",
+                  "Taco shells",
+                  "Cheddar cheese",
+                  "Salsa",
+                  "Sour cream",
+                  "Lettuce",
+                ],
+                isVegetarian: false,
+              },
+              {
+                title: "Mushroom Risotto",
+                image:
+                  "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                prepTime: 45,
+                difficulty: DIFFICULTY_LEVELS.Hard,
+                servings: 4,
+                rating: 4,
+                ingredients: [
+                  "1 cup arborio rice",
+                  "250g mushrooms",
+                  "Vegetable broth",
+                  "Parmesan",
+                  "Onion",
+                  "Garlic",
+                ],
+                isVegetarian: true,
+              },
+              {
+                title: "Avocado Toast",
+                image:
+                  "https://images.unsplash.com/photo-1613769049987-b31b641f25b1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                prepTime: 10,
+                difficulty: DIFFICULTY_LEVELS.Easy,
+                servings: 1,
+                rating: 3,
+                ingredients: [
+                  "2 slices sourdough",
+                  "1 avocado",
+                  "Red chili flakes",
+                  "Lemon juice",
+                  "Salt & pepper",
+                ],
+                isVegetarian: true,
+              },
+            ],
+          };
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

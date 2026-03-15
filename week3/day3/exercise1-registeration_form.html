@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body
+    id="app"
+    class="bg-gray-100 min-h-screen flex flex-col items-center p-6"
+  >
+    <button
+      @click="isForm = !isForm"
+      class="self-start mb-4 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 active:bg-blue-400"
+    >
+      {{isForm ? "See User data" : "Back To Form"}}
+    </button>
+
+    <div
+      v-if="!isForm"
+      class="bg-white shadow-lg rounded-2xl p-8 w-full flex flex-col items-center"
+    >
+      <h2 class="text-2xl font-bold mb-4">Stored Users</h2>
+
+      <!-- Empty State -->
+      <div v-if="result.length === 0" class="text-gray-500">
+        No stored data found.
+      </div>
+
+      <!-- Data List -->
+      <div v-else class="grid md:grid-cols-2 gap-6">
+        <div
+          v-for="item in result"
+          :key="item.id"
+          class="border rounded-xl p-5 shadow-md bg-white"
+        >
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-lg">{{ item.username }}</h3>
+            <button
+              @click="deleteItem(item.id)"
+              class="text-red-500 text-sm hover:underline"
+            >
+              Delete
+            </button>
+          </div>
+
+          <p><strong>Email:</strong> {{ item.email }}</p>
+          <p><strong>Age:</strong> {{ item.age }}</p>
+          <p><strong>Phone:</strong> {{ item.phoneNumber }}</p>
+          <p><strong>Country:</strong> {{ item.country }}</p>
+          <p><strong>Gender:</strong> {{ item.gender }}</p>
+          <p><strong>Interests:</strong> {{ item.interests.join(', ') }}</p>
+          <p>
+            <strong>Public Profile:</strong> {{ item.publicProfile ? 'Yes' :
+            'No' }}
+          </p>
+          <p>
+            <strong>Subscribed:</strong> {{ item.subscribe ? 'Yes' : 'No' }}
+          </p>
+
+          <div class="mt-3 text-sm text-gray-500">ID: {{ item.id }}</div>
+        </div>
+      </div>
+
+      <!-- Clear All -->
+      <div v-if="result.length > 0" class="mt-6">
+        <button
+          @click="clearAll"
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Clear All Data
+        </button>
+      </div>
+    </div>
+
+    <div v-if="isForm" class="bg-white shadow-lg rounded-2xl p-8 w-full">
+      <h2 class="text-2xl font-bold mb-6 text-center">User Registration</h2>
+
+      <form class="space-y-5" @submit.prevent="onSubmit">
+        <!-- Username -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Username
+            <span
+              v-if="!isUsernameValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.username}}</span
+            >
+          </label>
+          <input
+            v-model="username"
+            type="text"
+            pattern="^[a-zA-Z0-9]{3,20}$"
+            required
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="3-20 alphanumeric characters"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Email
+            <span
+              v-if="!isEmailValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.email}}</span
+            ></label
+          >
+          <input
+            v-model="email"
+            type="email"
+            required
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="example@email.com"
+          />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Password
+            <span
+              v-if="!isPasswordValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.password}}</span
+            ></label
+          >
+          <input
+            v-model="password"
+            type="password"
+            required
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="Min 8 chars, upper, lower, number, special char"
+          />
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Confirm Password
+            <span
+              v-if="!isConfirmPasswordValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.confirmPassword}}</span
+            ></label
+          >
+          <input
+            v-model="confirmPassword"
+            type="password"
+            required
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="Re-enter password"
+          />
+        </div>
+
+        <!-- Age -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Age
+            <span
+              v-if="!isAgeValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.age}}</span
+            ></label
+          >
+          <input
+            v-model="age"
+            type="number"
+            min="13"
+            max="120"
+            required
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Phone Number
+            <span
+              v-if="!isPhoneValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.phoneNumber}}</span
+            ></label
+          >
+          <input
+            type="tel"
+            v-model="phoneNumber"
+            required
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="+1234567890"
+          />
+        </div>
+
+        <!-- Country -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Country
+            <span
+              v-if="!isCountryValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.country}}</span
+            ></label
+          >
+          <select
+            required
+            v-model="country"
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Country</option>
+            <option value="cambodia">Cambodia</option>
+            <option value="vietnam">Vietnam</option>
+            <option value="singapore">Singapore</option>
+            <option value="malaysia">Malaysia</option>
+            <option value="japan">Japan</option>
+            <option value="south-korea">South Korea</option>
+            <option value="china">China</option>
+            <option value="united-states">United States</option>
+            <option value="france">France</option>
+          </select>
+        </div>
+
+        <!-- Gender -->
+        <div>
+          <label class="block font-medium mb-2"
+            >Gender
+            <span
+              v-if="!isGenderValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.gender}}</span
+            ></label
+          >
+          <div class="flex flex-wrap gap-4">
+            <label
+              ><input
+                type="radio"
+                name="gender"
+                value="male"
+                required
+                v-model="gender"
+              />
+              Male</label
+            >
+            <label
+              ><input
+                type="radio"
+                name="gender"
+                value="female"
+                v-model="gender"
+              />
+              Female</label
+            >
+            <label
+              ><input
+                type="radio"
+                name="gender"
+                value="other"
+                v-model="gender"
+              />
+              Other</label
+            >
+            <label
+              ><input
+                type="radio"
+                name="gender"
+                value="not-to-say"
+                v-model="gender"
+              />
+              Prefer not to say</label
+            >
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div>
+          <label class="block font-medium mb-2"
+            >Interests
+            <span
+              v-if="!isInterestsValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.interests}}</span
+            ></label
+          >
+          <div class="grid grid-cols-2 gap-2">
+            <label
+              ><input type="checkbox" value="technology" v-model="interests" />
+              Technology</label
+            >
+            <label
+              ><input type="checkbox" value="sports" v-model="interests" />
+              Sports</label
+            >
+            <label
+              ><input type="checkbox" value="music" v-model="interests" />
+              Music</label
+            >
+            <label
+              ><input type="checkbox" value="travel" v-model="interests" />
+              Travel</label
+            >
+            <label
+              ><input type="checkbox" value="reading" v-model="interests" />
+              Reading</label
+            >
+            <label
+              ><input type="checkbox" value="gaming" v-model="interests" />
+              Gaming</label
+            >
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <label class="block font-medium mb-1"
+            >Bio
+            <span
+              v-if="!isBioValid"
+              class="text-sm ml-2 font-normal text-red-500"
+              >{{errorMessages.bio}}</span
+            ></label
+          >
+          <textarea
+            v-model="bio"
+            maxlength="500"
+            class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            rows="4"
+            placeholder="Max 500 characters"
+          ></textarea>
+        </div>
+
+        <!-- Profile Visibility -->
+        <div class="flex items-center gap-2">
+          <input type="checkbox" v-model="publicProfile" />
+          <label>Public Profile</label>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="flex items-center gap-2">
+          <input type="checkbox" v-model="subscribe" />
+          <label>Subscribe to Newsletter</label>
+        </div>
+
+        <!-- Terms -->
+        <div class="flex items-center gap-2">
+          <input type="checkbox" required v-model="isConditionAgree" />
+          <label>I agree to the Terms and Conditions</label>
+        </div>
+
+        <!-- Submit -->
+        <button
+          :disabled="!isFormValid()"
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          Register
+        </button>
+      </form>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            errorMessages: {
+              username:
+                "Username must be 3-20 characters and contain only letters and numbers.",
+              email: "Please enter a valid email address.",
+              password:
+                "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+              confirmPassword: "Passwords do not match.",
+              age: "Age must be between 13 and 120.",
+              phoneNumber:
+                "Phone number must be 7-15 digits and may include +.",
+              country: "Please select your country.",
+              gender: "Please select your gender.",
+              interests: "Please select at least one interest.",
+              bio: "Bio must not exceed 500 characters.",
+              isConditionAgree: "You must agree to the Terms and Conditions.",
+            },
+            result: [],
+            username: "",
+            password: "",
+            email: "",
+            confirmPassword: "",
+            age: 0,
+            phoneNumber: "",
+            country: "",
+            gender: "",
+            interests: [],
+            bio: "",
+            publicProfile: false,
+            subscribe: false,
+            isConditionAgree: false,
+            isForm: true,
+          };
+        },
+        methods: {
+          // helper not used
+          fetchResult() {
+            return this.result;
+          },
+          isFormValid() {
+            return (
+              this.isUsernameValid &&
+              this.isEmailValid &&
+              this.isPasswordValid &&
+              this.isConfirmPasswordValid &&
+              this.isAgeValid &&
+              this.isPhoneValid &&
+              this.isCountryValid &&
+              this.isGenderValid &&
+              this.isInterestsValid &&
+              this.isBioValid &&
+              this.isConditionValid
+            );
+          },
+          deleteItem(id) {
+            const idx = this.result.findIndex((r) => r.id === id);
+            if (idx !== -1 && window.confirm("Delete this entry?")) {
+              this.result.splice(idx, 1);
+            }
+          },
+          clearAll() {
+            if (
+              this.result.length &&
+              window.confirm("Clear all stored data?")
+            ) {
+              this.result = [];
+            }
+          },
+          resetForm() {
+            // keep stored results intact, just clear the input fields
+            this.username = "";
+            this.password = "";
+            this.email = "";
+            this.confirmPassword = "";
+            this.age = 0;
+            this.phoneNumber = "";
+            this.country = "";
+            this.gender = "";
+            this.interests = [];
+            this.bio = "";
+            this.publicProfile = false;
+            this.subscribe = false;
+            this.isConditionAgree = false;
+          },
+          onSubmit() {
+            if (this.isFormValid()) {
+              const newForm = {
+                id: Date.now(),
+                username: this.username,
+                password: this.password,
+                email: this.email,
+                confirmPassword: this.confirmPassword,
+                age: this.age,
+                phoneNumber: this.phoneNumber,
+                country: this.country,
+                gender: this.gender,
+                interests: this.interests,
+                bio: this.bio,
+                publicProfile: this.publicProfile,
+                subscribe: this.subscribe,
+                isConditionAgree: this.isConditionAgree,
+              };
+
+              this.result.push(newForm);
+              // persist immediately
+              localStorage.setItem(
+                "registrationData",
+                JSON.stringify(this.result),
+              );
+
+              console.log(this.result);
+              this.resetForm();
+              window.alert("Form have been submitted.");
+            }
+          },
+        },
+        computed: {
+          // Validata USERNAME
+          isUsernameValid() {
+            return /^[a-zA-Z0-9]{3,20}$/.test(this.username.trim());
+          },
+
+          isEmailValid() {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim());
+          },
+
+          // PASSWORD RULES
+          passwordRules() {
+            return {
+              length: this.password.length >= 8,
+              upper: /[A-Z]/.test(this.password),
+              lower: /[a-z]/.test(this.password),
+              number: /[0-9]/.test(this.password),
+              special: /[@$!%*?&]/.test(this.password),
+            };
+          },
+
+          isPasswordValid() {
+            const r = this.passwordRules;
+            return r.length && r.upper && r.lower && r.number && r.special;
+          },
+
+          // CONFIRM PASSWORD
+          isConfirmPasswordValid() {
+            return this.password === this.confirmPassword;
+          },
+
+          // Validate AGE
+          isAgeValid() {
+            return this.age >= 13 && this.age <= 120;
+          },
+
+          // PHONE NUMBER
+          isPhoneValid() {
+            return /^\+?[0-9]{7,15}$/.test(this.phoneNumber);
+          },
+
+          // COUNTRY
+          isCountryValid() {
+            return this.country !== "";
+          },
+
+          // GENDER
+          isGenderValid() {
+            return this.gender !== "";
+          },
+
+          // INTERESTS (at least 1 selected)
+          isInterestsValid() {
+            return this.interests.length > 0;
+          },
+
+          // BIO (max 500)
+          isBioValid() {
+            return this.bio.length <= 500;
+          },
+
+          // TERMS
+          isConditionValid() {
+            return this.isConditionAgree === true;
+          },
+        },
+        watch: {
+          result: {
+            handler() {
+              localStorage.setItem(
+                "registrationData",
+                JSON.stringify(this.result),
+              );
+            },
+            deep: true,
+          },
+        },
+        mounted() {
+          const saved = localStorage.getItem("registrationData");
+          if (saved) {
+            this.result = JSON.parse(saved);
+            console.log("Loaded registration data from localStorage");
+          }
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

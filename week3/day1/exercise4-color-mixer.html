@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div
+      id="app"
+      class="bg-white w-full max-w-md rounded-xl shadow-lg p-6 space-y-6"
+    >
+      <!-- Title -->
+      <h1 class="text-2xl font-bold text-center">🎨 Color Mixer</h1>
+
+      <!-- Color Preview -->
+      <div class="flex items-center justify-between gap-4">
+        <div
+          class="w-24 h-24 rounded-lg border"
+          :style="{backgroundColor: `rgb(${red}, ${green}, ${blue})`}"
+        ></div>
+
+        <div class="flex-1 space-y-1">
+          <p class="text-sm text-gray-600">RGB</p>
+          <p class="font-semibold">{{red}}, {{green}}, {{blue}}</p>
+
+          <p class="text-sm text-gray-600 mt-2">HEX</p>
+          <p class="font-mono font-semibold">{{ rgbToHex }}</p>
+        </div>
+      </div>
+
+      <!-- Sliders -->
+      <div class="space-y-4">
+        <!-- Red -->
+        <div>
+          <div class="flex justify-between text-sm font-medium">
+            <span>Red</span>
+            <span>{{red}}</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="255"
+            v-model="red"
+            class="w-full accent-red-500"
+          />
+        </div>
+
+        <!-- Green -->
+        <div>
+          <div class="flex justify-between text-sm font-medium">
+            <span>Green</span>
+            <span>{{green}}</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="255"
+            v-model="green"
+            class="w-full accent-green-500"
+          />
+        </div>
+
+        <!-- Blue -->
+        <div>
+          <div class="flex justify-between text-sm font-medium">
+            <span>Blue</span>
+            <span>{{blue}}</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="255"
+            v-model="blue"
+            class="w-full accent-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- Preset Colors -->
+      <div>
+        <p class="text-sm font-semibold mb-2">Presets</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button @click="setRed" class="bg-red-500 text-white py-2 rounded-lg">
+            Red
+          </button>
+          <button
+            @click="setGreen"
+            class="bg-green-500 text-white py-2 rounded-lg"
+          >
+            Green
+          </button>
+          <button
+            @click="setBlue"
+            class="bg-blue-500 text-white py-2 rounded-lg"
+          >
+            Blue
+          </button>
+          <button
+            @click="setYellow"
+            class="bg-yellow-400 text-black py-2 rounded-lg"
+          >
+            Yellow
+          </button>
+          <button
+            @click="setPurple"
+            class="bg-purple-500 text-white py-2 rounded-lg"
+          >
+            Purple
+          </button>
+          <button @click="setBlack" class="bg-black text-white py-2 rounded-lg">
+            Black
+          </button>
+          <button
+            @click="setWhite"
+            class="bg-white text-black py-2 rounded-lg border"
+          >
+            White
+          </button>
+        </div>
+      </div>
+
+      <!-- Random Button -->
+      <button
+        @click="random"
+        class="w-full bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
+      >
+        🎲 Random Color
+      </button>
+    </div>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            green: 128,
+            red: 128,
+            blue: 128,
+          };
+        },
+        methods: {
+          setRed() {
+            this.red = 255;
+            this.green = 0;
+            this.blue = 0;
+          },
+          setGreen() {
+            this.red = 0;
+            this.green = 255;
+            this.blue = 0;
+          },
+          setBlue() {
+            this.red = 255;
+            this.green = 0;
+            this.blue = 0;
+          },
+          setYellow() {
+            this.red = 255;
+            this.green = 255;
+            this.blue = 0;
+          },
+          setPurple() {
+            this.red = 128;
+            this.green = 0;
+            this.blue = 128;
+          },
+          setBlack() {
+            this.red = 0;
+            this.green = 0;
+            this.blue = 0;
+          },
+          setWhite() {
+            this.red = 255;
+            this.green = 255;
+            this.blue = 255;
+          },
+          random() {
+            this.red = Math.floor(Math.random() * 255);
+            this.green = Math.floor(Math.random() * 255);
+            this.blue = Math.floor(Math.random() * 255);
+          },
+        },
+        computed: {
+          rgbToHex() {
+            return (
+              "#" +
+              (
+                (1 << 24) +
+                (Number(this.red) << 16) +
+                (Number(this.green) << 8) +
+                Number(this.blue)
+              )
+                .toString(16)
+                .slice(1)
+                .toUpperCase()
+            );
+          },
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

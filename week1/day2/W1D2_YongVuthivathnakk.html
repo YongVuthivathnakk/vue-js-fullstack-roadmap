@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width= , initial-scale=1.0" />
+    <title>Survey</title>
+  </head>
+  <body>
+    <header><h1>School Survey Form</h1></header>
+
+    <hr />
+    <nav>
+      <a href="#">Home</a> | <a href="#">About</a> | <a href="#">Contact</a>
+    </nav>
+    <main>
+      <form action="#">
+        <h1>Personal Information</h1>
+        <hr />
+        <label for="name">Name:</label>
+        <input type="text" maxlength="30" name="name" id="name" required />
+        <br />
+        <br />
+        <label for="email">Email:</label>
+        <input type="email" maxlength="100" name="email" id="email" required />
+        <br />
+        <br />
+        <label for="age">Age:</label>
+        <input type="number" name="age" min="12" max="100" id="age" required />
+        <br />
+        <br />
+        <h1>School Satisfaction</h1>
+        <hr />
+
+        <p>1. How satisfied are you with our current course?</p>
+
+        <label>
+          <input type="radio" name="satisfaction" />
+          Very Satisfied
+        </label>
+        <label>
+          <input type="radio" name="satisfaction" />
+          Very Satisfied
+        </label>
+        <label>
+          <input type="radio" name="satisfaction" />
+          Neutral
+        </label>
+        <label>
+          <input type="radio" name="satisfaction" />
+          Dissatisfied
+        </label>
+
+        <p>2. Does Teacher explain lessons clearly?</p>
+        <label>
+          <input type="radio" name="teaching" />
+          Exellent
+        </label>
+        <label>
+          <input type="radio" name="teaching" />
+          Great
+        </label>
+
+        <label>
+          <input type="radio" name="teaching" />
+          Good
+        </label>
+        <label>
+          <input type="radio" name="teaching" />
+          Bad
+        </label>
+
+        <h1>Course Selection</h1>
+        <hr />
+        <p>1. Which course do you like to study?</p>
+        <label>
+          <input type="checkbox" name="math" id="math" />
+          Math
+        </label>
+        <br />
+        <label>
+          <input type="checkbox" name="physics" id="physics" />
+          Physics
+        </label>
+        <br />
+        <label>
+          <input type="checkbox" name="history" id="history" />
+          History
+        </label>
+        <br />
+        <h1>Rating</h1>
+        <hr />
+        <p>Rate your overall experience</p>
+        <label>
+          <input type="radio" name="rating" />
+          1
+        </label>
+        <br />
+        <label>
+          <input type="radio" name="rating" />
+          2
+        </label>
+        <br />
+
+        <label>
+          <input type="radio" name="rating" />
+          3
+        </label>
+        <br />
+        <label>
+          <input type="radio" name="rating" />
+          4
+        </label>
+        <br />
+        <label>
+          <input type="radio" name="rating" />
+          5
+        </label>
+        <br />
+
+        <h1>Additional Comment</h1>
+        <hr />
+        <label for="comment">Is there any something that we can imporve?</label>
+        <br />
+        <br />
+        <textarea
+          rows="5"
+          name="comment"
+          id="comment"
+          placeholder="Enter your thoughts here..."
+        ></textarea>
+        <br />
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+    </main>
+    <br />
+    <footer>Created by: Yong Vuthivathnakk | Date: January 8 2026</footer>
+  </body>
+</html>

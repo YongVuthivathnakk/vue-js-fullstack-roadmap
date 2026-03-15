@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Event Registration System</title>
+  </head>
+  <body class="bg-gray-100 min-h-screen p-6" id="app">
+    <!-- ================= HEADER ================= -->
+    <h1 class="text-2xl font-bold mb-6">🎟️ Event Registration System</h1>
+
+    <!-- ================= STATS ================= -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Total Events</p>
+        <p class="text-xl font-bold">{{getAllEvents}}</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Registered Events</p>
+        <p class="text-xl font-bold">{{totalRegistered}}</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Total Spent</p>
+        <!-- BUG FIX #2: totalSpent is now formatted as currency in the computed property -->
+        <p class="text-xl font-bold">{{totalSpent}}</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Upcoming Events</p>
+        <p class="text-xl font-bold">{{upcomingEvents}}</p>
+      </div>
+    </div>
+
+    <!-- ================= FILTERS & SORT ================= -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <select v-model="selectedCategory" class="px-4 py-2 border rounded">
+        <option value="">All Categories</option>
+        <option value="Conference">Conference</option>
+        <option value="Workshop">Workshop</option>
+        <option value="Webinar">Webinar</option>
+        <option value="Social">Social</option>
+      </select>
+
+      <select v-model="selectedStatus" class="px-4 py-2 border rounded">
+        <option value="">All Status</option>
+        <option value="Open">Open</option>
+        <option value="Closed">Closed</option>
+        <option value="Full">Full</option>
+      </select>
+
+      <select v-model="selectedPrice" class="px-4 py-2 border rounded">
+        <option value="">All Prices</option>
+        <option value="Free">Free</option>
+        <option value="Paid">Paid</option>
+      </select>
+
+      <select v-model="selectedUpcommingDate" class="px-4 py-2 border rounded">
+        <option value="">All Dates</option>
+        <option value="Upcoming">Upcoming</option>
+        <option value="Past">Past</option>
+      </select>
+
+      <select v-model="selectedSort" class="px-4 py-2 border rounded">
+        <option value="">Sort by</option>
+        <option value="Date">Date</option>
+        <option value="Price">Price</option>
+        <option value="Seats">Available Seats</option>
+      </select>
+    </div>
+
+    <!-- ================= EVENT LIST ================= -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <!-- BUG FIX #1: Changed filterdEvents → filteredEvents (typo fix) -->
+      <div v-if="filteredEvents.length === 0">No Events Available</div>
+      <div
+        v-else
+        v-for="(event, index) in filteredEvents"
+        :key="index"
+        class="bg-white p-4 rounded shadow"
+      >
+        <h3 class="font-bold text-lg">{{event.title}}</h3>
+        <p class="text-sm text-gray-500">📅 {{event.date}} • {{event.time}}</p>
+        <p class="text-sm text-gray-500">📍 {{event.location}}</p>
+
+        <div class="flex gap-2 my-2">
+          <span
+            class="text-xs px-2 rounded"
+            :class="categoryClass(event.category)"
+            >{{event.category}}</span
+          >
+          <span class="text-xs px-2 rounded" :class="statusClass(event.status)"
+            >{{event.status}}</span
+          >
+          <span
+            class="text-xs px-2 rounded"
+            :class="priceClass(event.priceType)"
+            >{{event.priceType}}</span
+          >
+        </div>
+
+        <p class="text-sm">Available Seats: <b>{{event.availableSeats}}</b></p>
+        <p class="font-bold mt-2">${{event.price.toFixed(2)}}</p>
+        <button
+          v-if="event.availableSeats === 0"
+          disabled
+          class="w-full cursor-not-allowed mt-3 bg-gray-600 text-white py-1 rounded"
+        >
+          Unavailable
+        </button>
+
+        <button
+          v-else
+          @click="showForm(event)"
+          class="w-full mt-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-300 text-white py-1 rounded"
+        >
+          Register
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= REGISTRATION FORM ================= -->
+    <div
+      v-if="isFormShow"
+      class="fixed inset-0 bg-black/40 flex justify-center items-center"
+    >
+      <div class="relative bg-white p-6 rounded shadow mb-10 max-w-lg">
+        <button
+          @click="closeForm"
+          class="absolute top-3 right-3 rounded-xl hover:bg-red-400 bg-red-500 px-2 py-1 text-white font-bold text-xs"
+        >
+          x
+        </button>
+        <h2 class="text-xl font-bold mb-4">📝 Event Registration Form</h2>
+
+        <input
+          v-model="nameInput"
+          class="w-full mb-3 px-3 py-2 border rounded"
+          placeholder="Full Name"
+        />
+        <input
+          v-model="emailInput"
+          class="w-full mb-3 px-3 py-2 border rounded"
+          placeholder="Email"
+        />
+        <input
+          v-model="phoneNumber"
+          class="w-full mb-3 px-3 py-2 border rounded"
+          placeholder="Phone Number"
+        />
+        <input
+          v-model="tickets"
+          type="number"
+          class="w-full mb-3 px-3 py-2 border rounded"
+          placeholder="Number of Tickets"
+        />
+
+        <button
+          @click="confirmForm"
+          class="w-full bg-green-600 text-white py-2 rounded"
+        >
+          Submit Registration
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= MY REGISTRATIONS ================= -->
+    <div class="bg-white p-6 rounded-2xl shadow-md max-w-lg w-full">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+        📌 <span>My Registrations</span>
+      </h2>
+
+      <div class="space-y-4">
+        <div
+          v-for="reg in registrations"
+          :key="reg.eventId"
+          class="flex items-center justify-between p-4 rounded-xl border"
+        >
+          <div>
+            <p class="font-semibold">{{ reg.title }}</p>
+            <p class="text-sm">🎟 Tickets: {{ reg.tickets }}</p>
+          </div>
+          <button
+            @click="unregister(reg)"
+            class="px-3 py-1 text-sm bg-red-100 text-red-600 rounded"
+          >
+            Unregister
+          </button>
+        </div>
+
+        <p v-if="registrations.length === 0" class="text-sm text-gray-400">
+          No registrations yet.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Category Enum
+      const Category = Object.freeze({
+        CONFERENCE: "Conference",
+        WORKSHOP: "Workshop",
+        WEBINAR: "Webinar",
+        SOCIAL: "Social",
+      });
+
+      const Status = Object.freeze({
+        OPEN: "Open",
+        CLOSED: "Closed",
+        FULL: "Full",
+      });
+
+      const PriceType = Object.freeze({
+        FREE: "Free",
+        PAID: "Paid",
+      });
+
+      const Sort = Object.freeze({
+        SEAT: "Seats",
+        DATE: "Date",
+        PRICE: "Price",
+      });
+
+      const { createApp } = Vue;
+
+      createApp({
+        data() {
+          return {
+            // BUG FIX #3: Populated the events array (was empty with just a comment)
+            events: [
+              {
+                id: 1,
+                title: "Vue.js Global Summit",
+                date: "2026-03-15",
+                time: "09:00 AM",
+                location: "San Francisco, CA",
+                category: Category.CONFERENCE,
+                status: Status.OPEN,
+                priceType: PriceType.PAID,
+                price: 199.99,
+                availableSeats: 50,
+              },
+              {
+                id: 2,
+                title: "React Workshop for Beginners",
+                date: "2026-04-10",
+                time: "10:00 AM",
+                location: "New York, NY",
+                category: Category.WORKSHOP,
+                status: Status.OPEN,
+                priceType: PriceType.PAID,
+                price: 79.99,
+                availableSeats: 20,
+              },
+              {
+                id: 3,
+                title: "Free Web Dev Webinar",
+                date: "2026-03-28",
+                time: "06:00 PM",
+                location: "Online",
+                category: Category.WEBINAR,
+                status: Status.OPEN,
+                priceType: PriceType.FREE,
+                price: 0,
+                availableSeats: 200,
+              },
+              {
+                id: 4,
+                title: "Tech Networking Night",
+                date: "2026-05-05",
+                time: "07:00 PM",
+                location: "Austin, TX",
+                category: Category.SOCIAL,
+                status: Status.OPEN,
+                priceType: PriceType.PAID,
+                price: 25.0,
+                availableSeats: 75,
+              },
+              {
+                id: 5,
+                title: "AI & Machine Learning Conference",
+                date: "2026-06-20",
+                time: "08:30 AM",
+                location: "Seattle, WA",
+                category: Category.CONFERENCE,
+                status: Status.OPEN,
+                priceType: PriceType.PAID,
+                price: 349.99,
+                availableSeats: 100,
+              },
+              {
+                id: 6,
+                title: "DevOps Bootcamp",
+                date: "2025-11-12",
+                time: "09:00 AM",
+                location: "Chicago, IL",
+                category: Category.WORKSHOP,
+                status: Status.CLOSED,
+                priceType: PriceType.PAID,
+                price: 149.99,
+                availableSeats: 0,
+              },
+              {
+                id: 7,
+                title: "Open Source Community Meetup",
+                date: "2025-12-01",
+                time: "05:00 PM",
+                location: "Boston, MA",
+                category: Category.SOCIAL,
+                status: Status.FULL,
+                priceType: PriceType.FREE,
+                price: 0,
+                availableSeats: 0,
+              },
+              {
+                id: 8,
+                title: "CSS & Design Systems Webinar",
+                date: "2026-04-22",
+                time: "03:00 PM",
+                location: "Online",
+                category: Category.WEBINAR,
+                status: Status.OPEN,
+                priceType: PriceType.FREE,
+                price: 0,
+                availableSeats: 500,
+              },
+            ],
+
+            registrations: [],
+
+            isFormShow: false,
+            selectedEvent: null,
+
+            selectedStatus: "",
+            selectedUpcommingDate: "",
+            selectedCategory: "",
+            selectedPrice: "",
+            selectedSort: "",
+
+            nameInput: "",
+            emailInput: "",
+            phoneNumber: "",
+            tickets: 1,
+          };
+        },
+
+        methods: {
+          showForm(event) {
+            this.selectedEvent = event;
+            this.isFormShow = true;
+          },
+
+          closeForm() {
+            this.isFormShow = false;
+            this.resetForm();
+          },
+
+          resetForm() {
+            this.nameInput = "";
+            this.emailInput = "";
+            this.phoneNumber = "";
+            this.tickets = 1;
+          },
+
+          confirmForm() {
+            if (!this.nameInput || !this.emailInput || this.tickets <= 0) {
+              alert("Please fill all fields correctly.");
+              return;
+            }
+
+            if (this.tickets > this.selectedEvent.availableSeats) {
+              alert("Not enough seats available.");
+              return;
+            }
+
+            // Reduce seats
+            this.selectedEvent.availableSeats -= this.tickets;
+
+            // If full, change status
+            if (this.selectedEvent.availableSeats === 0) {
+              this.selectedEvent.status = Status.FULL;
+            }
+
+            // Save registration
+            this.registrations.push({
+              eventId: this.selectedEvent.id,
+              title: this.selectedEvent.title,
+              tickets: this.tickets,
+              total: this.selectedEvent.price * this.tickets,
+            });
+
+            this.closeForm();
+          },
+
+          unregister(reg) {
+            const event = this.events.find((e) => e.id === reg.eventId);
+            event.availableSeats += reg.tickets;
+
+            if (event.availableSeats > 0 && event.status === Status.FULL) {
+              event.status = Status.OPEN;
+            }
+
+            this.registrations = this.registrations.filter((r) => r !== reg);
+          },
+
+          statusClass(status) {
+            const map = {
+              [Status.OPEN]: "bg-green-100 text-green-700",
+              [Status.CLOSED]: "bg-gray-100 text-gray-600",
+              [Status.FULL]: "bg-red-100 text-red-700",
+            };
+            return map[status] || "bg-gray-100 text-gray-600";
+          },
+
+          categoryClass(category) {
+            const map = {
+              [Category.CONFERENCE]: "bg-blue-100 text-blue-700",
+              [Category.WORKSHOP]: "bg-purple-100 text-purple-700",
+              [Category.WEBINAR]: "bg-yellow-100 text-yellow-700",
+              [Category.SOCIAL]: "bg-green-100 text-green-700",
+            };
+            return map[category] || "bg-gray-100 text-gray-600";
+          },
+
+          priceClass(priceType) {
+            const map = {
+              [PriceType.FREE]: "bg-gray-200 text-gray-700",
+              [PriceType.PAID]: "bg-blue-100 text-blue-700",
+            };
+            return map[priceType] || "bg-gray-100 text-gray-600";
+          },
+        },
+
+        computed: {
+          getAllEvents() {
+            return this.events.length;
+          },
+
+          totalRegistered() {
+            return this.registrations.length;
+          },
+
+          totalSpent() {
+            const total = this.registrations.reduce(
+              (sum, r) => sum + r.total,
+              0,
+            );
+            return `$${total.toFixed(2)}`;
+          },
+
+          upcomingEvents() {
+            const today = new Date();
+            return this.events.filter((e) => new Date(e.date) >= today).length;
+          },
+
+          filteredEvents() {
+            const today = new Date();
+
+            let filtered = this.events.filter((event) => {
+              const matchesCategory =
+                !this.selectedCategory ||
+                event.category === this.selectedCategory;
+
+              const matchesStatus =
+                !this.selectedStatus || event.status === this.selectedStatus;
+
+              const matchesPrice =
+                !this.selectedPrice ||
+                (this.selectedPrice === PriceType.FREE && event.price === 0) ||
+                (this.selectedPrice === PriceType.PAID && event.price > 0);
+
+              const eventDate = new Date(event.date);
+
+              const matchesDate =
+                !this.selectedUpcommingDate ||
+                (this.selectedUpcommingDate === "Upcoming" &&
+                  eventDate >= today) ||
+                (this.selectedUpcommingDate === "Past" && eventDate < today);
+
+              return (
+                matchesCategory && matchesStatus && matchesPrice && matchesDate
+              );
+            });
+
+            if (this.selectedSort === Sort.DATE.valueOf()) {
+              filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+            }
+
+            if (this.selectedSort === Sort.PRICE.valueOf()) {
+              filtered.sort((a, b) => a.price - b.price);
+            }
+
+            if (this.selectedSort === Sort.SEAT.valueOf()) {
+              filtered.sort((a, b) => b.availableSeats - a.availableSeats);
+            }
+
+            return filtered;
+          },
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

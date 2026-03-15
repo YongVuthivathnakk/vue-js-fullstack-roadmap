@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <p id="counter">0</p>
+    <button id="btn" class="bg-blue-200 px-7 py-1 rounded-md">Add 1</button>
+
+    <p id="data">Data</p>
+
+    <button id="show-btn" class="bg-blue-200 px-7 py-1 rounded-md">
+      Show Data
+    </button>
+
+    <button id="save-btn">Save Data</button>
+
+    <div class="py-20"></div>
+
+    <form id="username-form">
+      <input
+        type="text"
+        id="username"
+        class="bg-blue-100 border-2 border-blue-500 rounded-lg"
+        placeholder="Username"
+      />
+      <span id="error" class="text-red-500 hidden"
+        >Name length must be more than 3</span
+      >
+      <button
+        type="submit"
+        id="submit-btn"
+        class="bg-blue-200 px-7 py-1 rounded-md"
+      >
+        Submit
+      </button>
+    </form>
+
+    <script>
+      const list = ["list1", "list2", "list3"];
+      const saveBtn = document.getElementById("save-btn");
+      const showBtn = document.getElementById("show-btn");
+      const data = document.getElementById("data");
+
+      const error = document.getElementById("error");
+      const usernameInput = document.getElementById("username");
+      const usernameForm = document.getElementById("username-form");
+      usernameForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (usernameInput.value.length < 3) {
+          error.classList.remove("hidden"); // show error
+          return;
+        } else {
+          error.classList.add("hidden"); // hide error
+        }
+
+        console.log(usernameInput.value);
+      });
+
+      function saveArrayToLocal() {
+        localStorage.setItem("list", JSON.stringify(list));
+      }
+
+      function showData() {
+        const results = localStorage.getItem("list");
+
+        data.textContent = JSON.parse(results);
+      }
+
+      showBtn.addEventListener("click", showData);
+
+      saveBtn.addEventListener("click", saveArrayToLocal);
+
+      const btn = document.getElementById("btn");
+      const counter = document.getElementById("counter");
+      var number = 0;
+
+      btn.addEventListener("click", () => {
+        number += 1;
+        counter.textContent = number;
+      });
+    </script>
+  </body>
+</html>

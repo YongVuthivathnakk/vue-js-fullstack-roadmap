@@ -1,0 +1,168 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    height: auto;
+    box-shadow: 0 2px 2px grey;
+    padding-right: 20px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: black;
+    text-align: center;
+    padding: 14px;
+}
+
+.nav-item:hover {
+     background-color: green;
+     color: white;
+     
+}
+
+
+#logo-container{
+    margin-left: 50px;
+
+}
+
+
+.logo {
+   width:40px ;
+   height: 40;
+}
+
+
+
+#hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5em;
+    height: 90vh;
+
+    text-align: center;
+}
+
+#hero-logo {
+    width: 5px;
+    height: 5px;
+}
+
+#hero-heading{
+    font-size: 64px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+#hero-header {
+    font-size: 64px;
+}
+
+#hero-description{
+    width: 1000px;
+    font-size: 20px;
+}
+
+.hero-button {
+    padding: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 10px;
+    border: 2px solid green;
+
+}
+#view-more {
+    background-color: none;
+    color: black;
+}
+
+
+
+#get-started {
+    background-color: green;
+    color: white;
+}
+
+
+.active {
+    background-color: green;
+    color: white;
+}
+
+.hero-logo {
+    width: 70px;
+}
+
+
+#hero-buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+}
+
+
+
+.social-container {
+background-color: #1b1b1b;
+height: 140px;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 1em;
+}
+
+.img-container {
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    border-radius: 50%;
+    flex-wrap: wrap;
+}
+
+.social-img {
+    width: 40px;
+}
+
+.copyright {
+    text-align: center;
+    padding: 10px;
+    background-color: black;
+    color: white;
+}
+
+
+.nav-footer {
+    background-color: #1b1b1b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+    padding: 40px;
+    padding-top: 0;
+}
+
+.nav-footer-item {
+    text-decoration: none;
+    color: white;
+}
+
+.nav-footer-item:hover {
+    color: green;
+}

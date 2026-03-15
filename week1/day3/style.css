@@ -1,0 +1,90 @@
+
+*
+{
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body{
+margin: 100px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    box-shadow: 1px 1px 20px rgb(223, 223, 223);
+}
+
+img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    border: 3px solid grey;
+    margin-left: 40px;
+}
+
+h1:hover{
+    color: white;
+}
+
+header {
+    padding: 20px;
+    border-radius: 10px 10px 0px 0px;
+    display: flex;
+    align-items: center;
+} 
+
+section{
+    padding: 20px;
+}
+
+#heading {
+    background-color:rgb(0, 136, 255) ;
+}
+
+#education{
+    background-color:rgb(211, 163, 255);
+}
+
+#skills{
+    background-color:rgb(255, 177, 76);
+}
+
+#interests {
+    background-color:aquamarine;
+}
+
+#project     {
+    background-color:antiquewhite ;
+}
+
+
+#header-name{
+    padding-left: 40px;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: lightgrey;
+    border-radius: 0px 0px 10px 10px;
+}
+
+a {
+    text-decoration: none ;
+    color: Blue;
+
+}
+
+a:hover {
+    color: white;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+    background: #f4f4f4;
+    display: inline-block;
+}

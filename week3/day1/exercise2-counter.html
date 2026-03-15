@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex items-center justify-center"
+    id="app"
+  >
+    <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md space-y-6">
+      <!-- Title -->
+      <h1 class="text-2xl font-bold text-center">Enhanced Counter</h1>
+
+      <!-- Counter Display -->
+      <!-- Color will change dynamically later -->
+      <div class="text-center">
+        <p class="text-6xl font-extrabold" :class="counterColor">{{number}}</p>
+
+        <!-- Status Message -->
+        <p class="mt-2 text-gray-600 font-medium">{{counterMessage}}</p>
+      </div>
+
+      <!-- Increment Buttons -->
+      <div class="grid grid-cols-3 gap-3">
+        <button
+          @click="addOne"
+          class="bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold"
+        >
+          +1
+        </button>
+        <button
+          @click="addFive"
+          class="bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold"
+        >
+          +5
+        </button>
+        <button
+          @click="addTen"
+          class="bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold"
+        >
+          +10
+        </button>
+      </div>
+
+      <!-- Decrement & Reset -->
+      <div class="grid grid-cols-2 gap-3">
+        <button
+          @click="decreaseOne"
+          class="bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-semibold"
+        >
+          -1
+        </button>
+        <button
+          @click="reset"
+          class="bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg font-semibold"
+        >
+          Reset
+        </button>
+      </div>
+
+      <!-- Custom Reset -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">
+          Reset to custom value
+        </label>
+
+        <div class="flex gap-2">
+          <input
+            v-model="customeValue"
+            type="number"
+            placeholder="Enter value"
+            class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+
+          <button
+            @click="setCustomValue"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 rounded-lg font-semibold"
+          >
+            Set
+          </button>
+        </div>
+      </div>
+
+      <!-- Info / Hint Section -->
+      <div class="text-xs text-gray-500 text-center">
+        Counter color and message will change based on value.
+      </div>
+    </div>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            customeValue: 0,
+            number: 0,
+            isRed: false,
+            isBlue: true,
+            isOrange: false,
+            isGreen: false,
+            message: "Just started!",
+          };
+        },
+        methods: {
+          addFive() {
+            this.number += 5;
+          },
+          reset() {
+            this.number = 0;
+          },
+          decreaseOne() {
+            this.number--;
+          },
+          addOne() {
+            this.number++;
+          },
+          addTen() {
+            this.number += 10;
+          },
+          setCustomValue() {
+            this.number = this.customeValue;
+            this.customeValue = 0;
+          },
+        },
+        computed: {
+          counterColor() {
+            if (this.number < 0) return "text-red-500";
+            if (this.number < 50) return "text-blue-500";
+            if (this.number < 100) return "text-orange-500";
+            return "text-green-500";
+          },
+          counterMessage() {
+            if (this.number < 0) return "Negative values!";
+            if (this.number === 0) return "Just started!";
+            if (this.number > 0 && this.number < 50) return "Getting there!";
+            if (this.number === 50) return "Halfway to 100!";
+            if (this.number > 50 && this.number < 100) return "Almost there!";
+            return "Century!";
+          },
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

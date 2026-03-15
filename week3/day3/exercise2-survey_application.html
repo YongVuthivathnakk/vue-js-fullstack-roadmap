@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body
+    id="app"
+    class="bg-gray-100 min-h-screen flex items-center justify-center py-10 px-4"
+  >
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-2xl p-8">
+      <!-- Header -->
+      <div v-if="step !== 5" class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Developer Survey 2026</h1>
+        <p class="text-gray-500 mt-1">Step <span>{{step}}</span> of 4</p>
+        <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-blue-500 h-2 rounded-full transition-all duration-500"
+            :style="{width: progressWidth }"
+          ></div>
+        </div>
+      </div>
+
+      <form @submit.prevent="handleSubmit">
+        <!-- STEP 1: Personal Info -->
+        <div v-if="step === 1" class="space-y-5">
+          <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">
+            Personal Information
+          </h2>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Full Name <span class="text-red-500">*</span>
+              <span v-if="errors.fullname">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.fullname}}</span>
+              </span>
+            </label>
+            <input
+              required
+              v-model.lazy.trim="fullname"
+              type="text"
+              placeholder="John Doe"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Email Address <span class="text-red-500">*</span>
+              <span v-if="errors.email">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.email}}</span>
+              </span>
+            </label>
+            <input
+              v-model.lazy="email"
+              type="email"
+              placeholder="john@example.com"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Age
+
+              <span v-if="errors.age">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.age}}</span>
+              </span>
+            </label>
+            <input
+              v-model.number="age"
+              type="number"
+              min="18"
+              max="60"
+              placeholder="25"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Years of Experience
+
+              <span v-if="errors.yearsOfExperience">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.yearsOfExperience}}</span>
+              </span>
+            </label>
+            <input
+              v-model.number="yearsOfExperience"
+              type="number"
+              min="0"
+              max="40"
+              placeholder="3"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+        </div>
+
+        <!-- STEP 2: Role & Satisfaction -->
+        <div v-if="step === 2" class="space-y-5">
+          <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">
+            Role & Satisfaction
+          </h2>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Job Role
+              <span v-if="errors.jobRole">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.jobRole}}</span>
+              </span>
+            </label>
+            <select
+              v-model="jobRole"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+            >
+              <option value="">Select your role...</option>
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="Backend Developer">Backend Developer</option>
+              <option value="Full Stack Developer">Full Stack Developer</option>
+              <option value="DevOps Engineer">DevOps Engineer</option>
+              <option value="Data Scientist">Data Scientist</option>
+              <option value="Product Manager">Product Manager</option>
+              <option value="Desinger">Designer</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Industry
+              <span v-if="errors.industry">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.industry}}</span>
+              </span>
+            </label>
+            <select
+              v-model="industry"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+            >
+              <option value="">Select your industry...</option>
+              <option value="Technology">Technology</option>
+              <option value="Finance">Finance</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Education">Education</option>
+              <option value="E-Commerce">E-Commerce</option>
+              <option value="Media & Entertainment">
+                Media & Entertainment
+              </option>
+              <option value="Government">Government</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Overall Job Satisfaction (1 = Very Unhappy, 5 = Very Happy)
+
+              <span v-if="errors.jobSatisfaction">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.jobSatisfaction}}</span>
+              </span>
+            </label>
+            <div class="flex gap-6">
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  v-model.number="jobSatisfaction"
+                  type="radio"
+                  name="satisfaction"
+                  value="1"
+                  class="accent-blue-500"
+                />
+                1</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  v-model.number="jobSatisfaction"
+                  type="radio"
+                  name="satisfaction"
+                  value="2"
+                  class="accent-blue-500"
+                />
+                2</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  v-model.number="jobSatisfaction"
+                  type="radio"
+                  name="satisfaction"
+                  value="3"
+                  class="accent-blue-500"
+                />
+                3</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  v-model.number="jobSatisfaction"
+                  type="radio"
+                  name="satisfaction"
+                  value="4"
+                  class="accent-blue-500"
+                />
+                4</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  v-model.number="jobSatisfaction"
+                  type="radio"
+                  name="satisfaction"
+                  value="5"
+                  class="accent-blue-500"
+                />
+                5</label
+              >
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Features You Like (select all that apply)
+
+              <span v-if="errors.selectedFeatures">
+                <span class="text-gray-300"> | </span>
+                <span class="text-red-500">{{errors.selectedFeatures}}</span>
+              </span>
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  class="accent-blue-500"
+                  value="Remote Work"
+                  v-model="selectedFeatures"
+                />
+                Remote Work</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  value="Flexible Hours"
+                  v-model="selectedFeatures"
+                  class="accent-blue-500"
+                />
+                Flexible Hours</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  class="accent-blue-500"
+                  v-model="selectedFeatures"
+                  value="Good Pay"
+                />
+                Good Pay</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  class="accent-blue-500"
+                  v-model="selectedFeatures"
+                  value="Learning Opportunities"
+                />
+                Learning Opportunities</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  class="accent-blue-500"
+                  value="Team Culture"
+                  v-model="selectedFeatures"
+                />
+                Team Culture</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  class="accent-blue-500"
+                  value="Interesting Projects"
+                  v-model="selectedFeatures"
+                />
+                Interesting Projects</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Ratings & Budget -->
+        <div v-if="step === 3" class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">
+            Ratings & Budget
+          </h2>
+
+          <!-- Star: Work-Life Balance -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Work-Life Balance</label
+            >
+            <div class="flex gap-1 text-3xl">
+              <span
+                v-for="n in 5"
+                :key="n"
+                class="cursor-pointer transition-colors duration-200"
+                :class="n <= workLifeBalance ? 'text-yellow-500' : 'text-gray-300' "
+                @click="onSetRating(n)"
+                >&#9733;</span
+              >
+            </div>
+          </div>
+
+          <!-- Star: Team Collaboration -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Team Collaboration</label
+            >
+            <div class="flex gap-1 text-3xl" id="stars-collab">
+              <span
+                v-for="n in 5"
+                :key="n"
+                class="cursor-pointer transition-colors duration-200"
+                :class="n <= teamCollaboration ? 'text-yellow-500' : 'text-gray-300' "
+                @click="onSetTeamCollaboration(n)"
+              >
+                &#9733;
+              </span>
+            </div>
+          </div>
+
+          <!-- Star: Tools & Tech -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Tools & Technology</label
+            >
+            <div class="flex gap-1 text-3xl" id="stars-tools">
+              <span
+                v-for="n in 5"
+                :key="n"
+                class="star cursor-pointer transition-colors duration-200"
+                @click="onSetTools(n)"
+                :class="n <= tools ? 'text-yellow-500' : 'text-gray-300'"
+                >&#9733;</span
+              >
+            </div>
+          </div>
+
+          <!-- Range: Monthly Budget -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Monthly Tool Budget:
+              <span id="budget-val" class="font-bold text-blue-600"
+                >${{monthlyToolBudget}}</span
+              >
+            </label>
+            <input
+              v-model.number="monthlyToolBudget"
+              type="range"
+              id="budget-slider"
+              min="0"
+              max="5000"
+              step="50"
+              value="500"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+            <div class="flex justify-between text-xs text-gray-400 mt-1">
+              <span>$0</span><span>$5,000</span>
+            </div>
+          </div>
+
+          <!-- Range: Team Size -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Team Size:
+              <span id="team-val" class="font-bold text-blue-600"
+                >{{teamSize}} {{teamSize > 1 ? "People" : "Person"}}</span
+              >
+            </label>
+            <input
+              v-model.number="teamSize"
+              type="range"
+              id="team-slider"
+              min="1"
+              max="200"
+              step="1"
+              value="10"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+            <div class="flex justify-between text-xs text-gray-400 mt-1">
+              <span>1</span><span>200</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Comments + Submit -->
+        <div v-if="step === 4" class="space-y-5">
+          <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">
+            Final Thoughts
+          </h2>
+
+          <div id="comment-section">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Suggestions or Comments</label
+            >
+            <textarea
+              v-model="comment"
+              rows="5"
+              placeholder="Share your thoughts, ideas, or feedback here..."
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div v-if="step !== 5" class="flex justify-between mt-8 pt-4">
+          <button
+            v-if="step > 1 && step < 5"
+            @click="onBack"
+            type="button"
+            class="px-6 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+          >
+            Back
+          </button>
+          <div class="ml-auto flex gap-3">
+            <button
+              v-if="step < 4 "
+              type="button"
+              @click="onNext"
+              class="px-6 py-2 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+            >
+              Next
+            </button>
+            <button
+              v-if="step === 4"
+              type="submit"
+              class="px-6 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="flex flex-col gap-6">
+        <!-- End Form -->
+        <div
+          v-if="step === 5 && showData === false"
+          class="bg-green-50 border border-green-300 text-green-700 rounded-lg px-4 py-6 text-center"
+        >
+          <p class="text-4xl mb-2">🎉</p>
+          <p class="font-semibold text-lg">
+            Thank you for completing the survey!
+          </p>
+          <p class="text-sm mt-1 text-green-600">
+            Your responses have been recorded.
+          </p>
+        </div>
+
+        <!-- Data  Tab-->
+
+        <div v-if="showData && step === 5" class="flex flex-col gap-4">
+          <p
+            class="text-sm text-gray-400 uppercase tracking-wide font-semibold"
+          >
+            {{ forms.length }} Submission(s) recorded
+          </p>
+
+          <div
+            v-for="entry in forms"
+            :key="entry.id"
+            class="border border-gray-200 rounded-xl p-5 flex flex-col gap-4 shadow-sm"
+          >
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b pb-3">
+              <div>
+                <p class="font-bold text-gray-800 text-base">
+                  {{ entry.fullname }}
+                </p>
+                <p class="text-sm text-gray-400">{{ entry.email }}</p>
+              </div>
+              <span
+                class="text-xs bg-blue-100 text-blue-600 font-medium px-3 py-1 rounded-full"
+              >
+                {{ entry.jobRole }}
+              </span>
+            </div>
+
+            <!-- Personal Info -->
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold mb-2">
+                Personal Info
+              </p>
+              <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                <p><span class="font-medium">Age:</span> {{ entry.age }}</p>
+                <p>
+                  <span class="font-medium">Experience:</span> {{
+                  entry.yearsOfExperience }} yrs
+                </p>
+                <p>
+                  <span class="font-medium">Industry:</span> {{ entry.industry
+                  }}
+                </p>
+                <p>
+                  <span class="font-medium">Satisfaction:</span> {{
+                  entry.jobSatisfaction }}/5
+                </p>
+              </div>
+            </div>
+
+            <!-- Ratings -->
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold mb-2">
+                Ratings
+              </p>
+              <div class="grid grid-cols-3 gap-2 text-sm text-center">
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <p class="text-yellow-500 text-base">
+                    {{ '★'.repeat(entry.workLifeBalanceRating) }}{{ '☆'.repeat(5
+                    - entry.workLifeBalanceRating) }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-1">Work-Life</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <p class="text-yellow-500 text-base">
+                    {{ '★'.repeat(entry.teamCollaborationRating) }}{{
+                    '☆'.repeat(5 - entry.teamCollaborationRating) }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-1">Team</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <p class="text-yellow-500 text-base">
+                    {{ '★'.repeat(entry.toolsRating) }}{{ '☆'.repeat(5 -
+                    entry.toolsRating) }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-1">Tools</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Budget & Team -->
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold mb-2">
+                Work Setup
+              </p>
+              <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                <p>
+                  <span class="font-medium">Budget:</span> ${{
+                  entry.monthlyToolBudget }}/mo
+                </p>
+                <p>
+                  <span class="font-medium">Team Size:</span> {{ entry.teamSize
+                  }} {{ entry.teamSize > 1 ? 'people' : 'person' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Features -->
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold mb-2">
+                Liked Features
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="feature in entry.selectedFeatures"
+                  :key="feature"
+                  class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"
+                >
+                  {{ feature }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Comment -->
+            <div v-if="entry.comment">
+              <p class="text-xs text-gray-400 uppercase font-semibold mb-1">
+                Comment
+              </p>
+              <p class="text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
+                {{ entry.comment }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Buttons -->
+        <div class="flex justify-between items-center">
+          <button
+            v-if="step === 5 && showData === false"
+            type="button"
+            @click="onShowData"
+            class="px-6 py-2 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+          >
+            See Form Data
+          </button>
+          <button
+            v-if="step === 5 && showData"
+            type="button"
+            @click="onHideData"
+            class="px-6 py-2 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+          >
+            Back
+          </button>
+          <button
+            v-if="step === 5 && showData"
+            type="button"
+            @click="exportAsJson"
+            class="px-6 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition"
+          >
+            Export Data
+          </button>
+          <button
+            v-if="step === 5 && !showData"
+            type="button"
+            @click="resetForm"
+            class="px-6 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition"
+          >
+            Submit Another Form
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            forms: JSON.parse(localStorage.getItem("forms")) || [],
+            step: 1,
+            errors: {},
+            showData: false,
+
+            // STEP 1 DATA
+            fullname: "",
+            email: "",
+            age: 0,
+            yearsOfExperience: 0,
+
+            // STEP 2 DATA
+
+            jobRole: "",
+            industry: "",
+            jobSatisfaction: "",
+            selectedFeatures: [],
+
+            // STEP 3 DATA
+            workLifeBalance: 0,
+            teamCollaboration: 0,
+            tools: 0,
+            monthlyToolBudget: 0,
+            teamSize: 1,
+
+            // STEP 4
+            comment: "",
+          };
+        },
+        methods: {
+          onNext() {
+            if (!this.validateStep()) return;
+            this.step++;
+          },
+          onShowData() {
+            this.showData = true;
+          },
+          onHideData() {
+            this.showData = false;
+          },
+          onBack() {
+            this.step--;
+          },
+          onSetRating(val) {
+            this.workLifeBalance = val;
+          },
+          onSetTeamCollaboration(val) {
+            this.teamCollaboration = val;
+          },
+          onSetTools(val) {
+            this.tools = val;
+          },
+          exportAsJson() {
+            const data = JSON.stringify(this.forms, null, 2);
+            const dataStr =
+              "data:application/json;charset=utf-8," + encodeURIComponent(data);
+            const a = document.createElement("a");
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "survey-data.json");
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          },
+          validateStep() {
+            this.errors = {};
+            // NOTE: use if instead of switch because it only return a single value
+
+            if (this.step === 1) {
+              if (!this.fullname || this.fullname.length < 3)
+                this.errors.fullname =
+                  "Full name must be at least 3 characters";
+
+              const emailPatterns = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!this.email || !emailPatterns.test(this.email))
+                this.errors.email = "Please enter a valid email";
+
+              if (!this.age || this.age < 18 || this.age > 100)
+                this.errors.age = "Age must be between 18 and 100";
+
+              const maxExperience = this.age - 18;
+              if (
+                this.yearsOfExperience < 0 ||
+                this.yearsOfExperience > maxExperience
+              )
+                this.errors.yearsOfExperience = `Experience cannot exceed ${maxExperience} years based on your age`;
+            }
+
+            if (this.step === 2) {
+              if (!this.jobRole) {
+                this.errors.jobRole = "Please select a job role";
+              }
+              if (!this.industry) {
+                this.errors.industry = "Please select an industry";
+              }
+
+              if (
+                !this.selectedFeatures ||
+                this.selectedFeatures.length === 0
+              ) {
+                this.errors.selectedFeatures =
+                  "Please select at least 1 feature";
+              }
+              if (!this.jobSatisfaction) {
+                this.errors.jobSatisfaction = "Please select a satisfaction";
+              }
+            }
+
+            return Object.keys(this.errors).length === 0;
+          },
+          resetForm() {
+            this.showData = false;
+            this.fullname = "";
+            this.step = 1;
+            this.email = "";
+            this.age = 0;
+            this.yearsOfExperience = 0;
+            this.jobRole = "";
+            this.jobSatisfaction = "";
+            this.selectedFeatures = [];
+            this.workLifeBalance = 0;
+            this.teamCollaboration = 0;
+            this.tools = 0;
+            this.monthlyToolBudget = 0;
+            this.teamSize = 1;
+            this.comment = "";
+            this.industry = "";
+          },
+          handleSubmit() {
+            const newForm = {
+              id: Date.now(),
+              fullname: this.fullname,
+              email: this.email,
+              age: this.age,
+              yearsOfExperience: this.yearsOfExperience,
+              jobRole: this.jobRole,
+              industry: this.industry,
+              jobSatisfaction: this.jobSatisfaction,
+              selectedFeatures: this.selectedFeatures,
+              workLifeBalanceRating: this.workLifeBalance,
+              teamCollaborationRating: this.teamCollaboration,
+              toolsRating: this.tools,
+              monthlyToolBudget: this.monthlyToolBudget,
+              teamSize: this.teamSize,
+              comment: this.comment,
+            };
+
+            this.forms.push(newForm);
+            localStorage.setItem("forms", JSON.stringify(this.forms));
+            this.step++;
+          },
+        },
+        computed: {
+          progressWidth() {
+            return `${Math.min((this.step / 4) * 100, 100)}%`;
+          },
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

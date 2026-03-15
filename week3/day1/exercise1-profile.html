@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body
+    id="app"
+    :class="[
+    'min-h-screen flex flex-col transition-colors duration-300',
+    isChecked ? 'bg-gray-900' : 'bg-gray-100'
+  ]"
+  >
+    <nav
+      :class="isChecked
+    ? 'bg-gray-800 border-gray-700 text-white'
+    : 'bg-white border-gray-300'"
+      class="flex w-full items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all"
+    >
+      <a href="#" class="text-2xl font-bold">My Porfolio</a>
+      <div class="flex flex-wrap items-center justify-center gap-12">
+        <label
+          :class="isChecked ? 'text-gray-400' : 'text-gray-500'"
+          class="relative inline-flex items-center cursor-pointer text-gray-900 gap-3"
+        >
+          <input type="checkbox" class="sr-only peer" v-model="isChecked" />
+          <div
+            class="w-12 h-7 bg-slate-300 rounded-full peer peer-checked:bg-emerald-600 transition-colors duration-200"
+          ></div>
+          <span
+            class="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"
+          ></span>
+          Professional Mode
+        </label>
+      </div>
+    </nav>
+
+    <div
+      :class="isChecked ? 'bg-gray-900 ' : 'bg-gray-100 text-gray-900'"
+      class="flex justify-center items-center min-h-screen"
+    >
+      <div class="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
+        <h1 class="text-2xl font-bold text-center mb-4">About Me</h1>
+
+        <!-- Full Name -->
+        <div class="mb-3">
+          <p class="text-sm text-gray-500">Full Name</p>
+          <p class="font-medium">{{ firstName + " " + lastName}}</p>
+        </div>
+
+        <!-- Age -->
+        <div class="mb-3">
+          <p class="text-sm text-gray-500">Age</p>
+          <p class="font-medium">{{age}}</p>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <p class="text-sm text-gray-500">Email</p>
+          <p class="font-medium">{{email}}</p>
+        </div>
+
+        <!-- City -->
+        <div class="mb-3">
+          <p class="text-sm text-gray-500">City</p>
+          <p class="font-medium">{{city}}</p>
+        </div>
+
+        <!-- Hobbies -->
+        <div class="mb-3">
+          <p class="text-sm text-gray-500 mb-1">Hobbies</p>
+          <ul class="list-disc list-inside text-gray-700">
+            <li v-for="(hobby, index) in hobbies" :key="index">{{hobby}}</li>
+          </ul>
+        </div>
+
+        <!-- Bio -->
+        <div class="mb-3">
+          <p class="text-sm text-gray-500 mb-1">Bio</p>
+          <p class="text-gray-700">{{bio}}</p>
+        </div>
+
+        <!-- fact -->
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Fun Fact</p>
+          <p class="text-gray-700">{{funFact[funFactIndex]}}</p>
+          <div class="flex gap-2 mt-5">
+            <button
+              @click="previousFact"
+              class="bg-gray-200 min-w-24 text-sm rounded-lg p-2 border-2 border-gray-300 hover:bg-gray-100 active:bg-gray-400 active:text-white"
+            >
+              previous
+            </button>
+            <button
+              @click="nextFact"
+              class="bg-gray-200 min-w-24 text-sm rounded-lg p-2 border-2 border-gray-300 hover:bg-gray-100 active:bg-gray-400 active:text-white"
+            >
+              next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+
+      const app = createApp({
+        data() {
+          return {
+            firstName: "Yong",
+            lastName: "Vuthivathnakk",
+            age: 21,
+            email: "vuthivathnakkyong@gmail.com",
+            city: "Phnom Penh",
+            hobbies: ["Coding", "Reading", "Gaming"],
+            bio: "I am a passionate learner interested in web development and technology. I enjoy building projects, working in teams, and continuously improving my skills.",
+            funFact: [
+              "I enjoy building things on the web and get excited when an idea turns into a working project.",
+              "I like learning new skills on my own and improving step by step every day.",
+              "When I’m not coding, I enjoy staying active and relaxing with football or other hobbies.",
+            ],
+            funFactIndex: 0,
+            isChecked: false,
+          };
+        },
+        methods: {
+          nextFact() {
+            this.funFactIndex++;
+            if (this.funFactIndex >= this.funFact.length) {
+              this.funFactIndex = 0;
+            }
+          },
+          previousFact() {
+            this.funFactIndex--;
+            if (this.funFactIndex < 0) {
+              this.funFactIndex = this.funFact.length - 1;
+            }
+          },
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

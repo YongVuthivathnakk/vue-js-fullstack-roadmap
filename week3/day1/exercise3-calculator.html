@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+  </head>
+  <body
+    id="app"
+    class="bg-gray-800 min-h-screen flex flex-col items-center gap-10 justify-center"
+  >
+    <h1 class="text-gray-100 text-4xl font-bold">THE BEST CALCULATOR</h1>
+    <div
+      class="bg-gray-900 w-80 rounded-2xl p-4 shadow-xl text-white space-y-4"
+    >
+      <!-- Display -->
+
+      <p class="text-sm block text-end text-gray-400">{{history[0]}}</p>
+      <input
+        class="w-full bg-black rounded-xl p-4 text-right text-3xl font-bold"
+        v-model="preview"
+        readonly
+      />
+      <!-- Keypad -->
+      <div class="grid grid-cols-4 gap-3">
+        <!-- Numbers -->
+        <button
+          @click="appendToDisplay('7')"
+          tabindex="-1"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-300 transition-all ease-in-out hover:bg-gray-500"
+        >
+          7
+        </button>
+        <button
+          @click="appendToDisplay('8')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-300 transition-all ease-in-out hover:bg-gray-500"
+        >
+          8
+        </button>
+        <button
+          @click="appendToDisplay('9')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-200 transition-all ease-in-out hover:bg-gray-500"
+        >
+          9
+        </button>
+        <button
+          @click="appendToDisplay('/')"
+          class="bg-orange-500 py-3 rounded-xl font-bold active:bg-orange-300 transition-all ease-in-out hover:bg-orange-400"
+        >
+          ÷
+        </button>
+
+        <button
+          @click="appendToDisplay('4')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          4
+        </button>
+        <button
+          @click="appendToDisplay('5')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          5
+        </button>
+        <button
+          @click="appendToDisplay('6')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          6
+        </button>
+        <button
+          @click="appendToDisplay('*')"
+          class="bg-orange-500 py-3 rounded-xl font-bold active:bg-orange-300 transition-all ease-in-out hover:bg-orange-400"
+        >
+          ×
+        </button>
+
+        <button
+          @click="appendToDisplay('1')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          1
+        </button>
+        <button
+          @click="appendToDisplay('2')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          2
+        </button>
+        <button
+          @click="appendToDisplay('3')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          3
+        </button>
+        <button
+          @click="appendToDisplay('-')"
+          class="bg-orange-500 py-3 rounded-xl font-bold active:bg-orange-300 transition-all ease-in-out hover:bg-orange-400"
+        >
+          −
+        </button>
+
+        <button
+          @click="appendToDisplay('0')"
+          class="bg-gray-700 py-3 rounded-xl col-span-2 active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          0
+        </button>
+        <button
+          @click="appendToDisplay('.')"
+          class="bg-gray-700 py-3 rounded-xl active:bg-gray-400 transition-all ease-in-out hover:bg-gray-500"
+        >
+          .
+        </button>
+        <button
+          @click="appendToDisplay('+')"
+          class="bg-orange-500 py-3 rounded-xl font-bold active:bg-orange-300 transition-all ease-in-out hover:bg-orange-400"
+        >
+          +
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="grid grid-cols-2 gap-3">
+        <button
+          @click="reset"
+          class="bg-red-500 py-3 rounded-xl font-semibold active:bg-red-300 transition-all ease-in-out hover:bg-red-400"
+        >
+          Clear
+        </button>
+        <button
+          @click="calculate"
+          @keyup.enter="calculate"
+          class="bg-blue-500 py-3 rounded-xl font-semibold active:bg-blue-300 transition-all ease-in-out hover:bg-blue-400"
+        >
+          =
+        </button>
+      </div>
+
+      <!-- History -->
+      <div
+        class="bg-gray-800 py-5 pb-2 rounded-xl p-3 text-sm text-gray-300 space-y-1 felx flex-col"
+      >
+        <p class="pb-2">History</p>
+        <p v-for="(h, index) in history" class="pb-2">&nbsp; {{h}}</p>
+        <button
+          @click="clearHistory"
+          :class="{hidden: history.length === 0}"
+          class="bg-gray-500 w-full p-2 rounded-xl font-semibold hover:bg-gray-400 transition-all ease-in-out"
+        >
+          Clear History
+        </button>
+      </div>
+    </div>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            preview: "0",
+            history: [],
+            calculated: false,
+          };
+        },
+        methods: {
+          appendToDisplay(input) {
+            if (
+              this.preview === "0" ||
+              calculated === true ||
+              this.preview === "Error"
+            ) {
+              this.preview = input;
+              calculated = false;
+            } else {
+              this.preview += input;
+            }
+          },
+          appendHistory(result) {
+            this.history.unshift(result);
+            if (this.history.length > 5) {
+              this.history.pop();
+            }
+          },
+          calculate() {
+            try {
+              const expression = this.preview;
+              const value = eval(expression);
+
+              if (!isFinite(value)) {
+                this.preview = "Error";
+                return;
+              }
+              this.preview = String(value);
+              this.appendHistory(`${expression} = ${value}`);
+              calculated = true;
+            } catch {
+              this.preview = "Error";
+            }
+          },
+          reset() {
+            this.preview = "0";
+          },
+          clearHistory() {
+            this.history = [];
+          },
+        },
+        computed: {},
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Document</title>
+  </head>
+  <body class="bg-gray-100">
+    <h1 class="text-center text-2xl font-semibold my-6">
+      Dynamic Image Gallery
+    </h1>
+
+    <!-- Gallery Grid -->
+    <div
+      id="gallery-grid"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-6"
+    ></div>
+
+    <!-- Modal -->
+    <div
+      id="modal"
+      class="fixed inset-0 z-[1000] bg-black/90 flex items-center justify-center hidden"
+    >
+      <!-- Close -->
+      <button
+        id="closeBtn"
+        class="absolute top-5 right-10 text-white text-4xl hover:opacity-70 transition"
+      >
+        &times;
+      </button>
+
+      <!-- Prev -->
+      <button
+        id="prevBtn"
+        class="absolute left-5 top-1/2 -translate-y-1/2 z-[1100] text-white text-5xl px-5 py-3 hover:opacity-70 transition"
+      >
+        ‹
+      </button>
+
+      <!-- Content -->
+      <div class="text-center text-white">
+        <img
+          id="modal-image"
+          class="max-w-[90vw] max-h-[80vh] object-contain mx-auto rounded-lg"
+        />
+        <p id="modal-caption" class="mt-2 text-lg"></p>
+        <p id="image-counter" class="text-sm opacity-80"></p>
+      </div>
+
+      <!-- Next -->
+      <button
+        id="nextBtn"
+        class="absolute right-5 top-1/2 -translate-y-1/2 z-[1100] text-white text-5xl px-5 py-3 hover:opacity-70 transition"
+      >
+        ›
+      </button>
+    </div>
+
+    <script src="image.js"></script>
+  </body>
+</html>
